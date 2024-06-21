@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<!--suppress ThymeleafVariablesResolveInspection -->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link rel="stylesheet" th:href="@{/css/font.css}">
+    <link rel="stylesheet" th:href="@{/css/xadmin.css}">
+    <link rel="stylesheet" th:href="@{/css/pg_btn.css}">
+    <script th:src="@{/layui/jquery-3.5.1.min.js}"></script>
+    <script th:src="@{/layui/layui.js}"></script>
+    <script th:src="@{/js/xadmin.js}"></script>
+    <title>图书信息</title>
+    <style type="text/css">
+        .layui-table{
+            text-align: center;
+        }
+        .layui-table th{
+            text-align: center;
+        }
+
+    </style>
+</head>
+<body>
+<div class="x-nav">
+      <span class="layui-breadcrumb">
+        <a href="">首页</a>
+        <a href="/findBook">借阅者信息</a>
+      </span>
+    <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="/findBook" title="刷新">
+        <i class="layui-icon" style="line-height:30px">&#xe9aa;</i></a>
+</div>
+<div class="x-body">
+    <div class="layui-row">
+        <form class="layui-form layui-col-md12 x-so" action="/findBook" >
+            <input class="layui-input" placeholder="请输入书名" name="book_name" id="book_name">
+            <input class="layui-input" placeholder="请输入作者" name="author" id="author">
+            <input class="layui-input" placeholder="请输入出版社" name="publishing_house" id="publishing_house">
+            <input class="layui-input" placeholder="请输入ISBN" name="ISBN" id="ISBN">
+            <input class="layui-input" type="hidden" name="pageIndex" value="1">
+            <input class="layui-input" type="hidden" name="pageSize" value="10">
+            <button class="layui-btn"  lay-submit="" lay-filter="search"><i class="layui-icon">&#xe615;</i></button>
+        </form>
+    </div>
+    <xblock>
+        <button id="addBookBtn" class="layui-btn layui-btn-normal"> <i class="layui-icon">&#xe654;</i>添加 </button>
+        <button id="deleteBookBtn" class="layui-btn layui-btn-normal" lay-submit lay-filter="deleteCk"> <i class="layui-icon">&#xe640;</i>删除选中图书 </button>
+        <span th:text="'共有数据：'+${pi.totalCount}+' 条'" class="x-right" style="line-height:40px"></span>
+    </xblock>
+
+    <div>
+        <!--图书信息表-->
+        <table class="layui-table" >
+            <thead>
+            <tr>
+                <th>选择</th>
+                <th>ISBN</th>
+                <th>书名</th>
+                <th>作者</th>
+                <th>出版日期</th>
+                <th>出版社</th>
+                <th>页数</th>
+                <th>图书简介</th>
+                <th>作者简介</th>
+                <th>标签</th>
+                <th>图片地址</th>
+                <th>剩余数量</th>
+                <th>操作</th>
+            </thead>
+            <tbody>
+            <tr th:each="book : ${pi.list}">
+                <td class="ck"><input type="checkbox" name="ck" th:value="${book.book_id}" lay-skin="primary" ></td>
+                <td th:text="${book.ISBN}" name="ISBN"></td>
+                <td th:text="${book.book_name}" name="book_name"></td>
+                <td th:text="${book.author}" name="author"></td>
+                <td th:text="${book.year_of_publication}" name="year_of_publication"></td>
+                <td th:text="${book.publishing_house}" name="publishing_house"></td>
+                <td th:text="${book.pages}" name="pages"></td>
+                <!--<td>-->
+                    <!--<button id="introductionBtn" class="layui-btn layui-btn-normal"> <i class="layui-icon">&#xe60b;</i>浏览图书简介</button>-->
+                <!--</td>-->
+                <!--<div class="layui-row" id="test2" style="display: none;">-->
+                    <!--<div class="layui-col-md10">-->
+                        <!--<p th:text="${book.brief_introduction}" name="brief_introduction"></p>-->
+                    <!--</div>-->
+                <!--</div>-->
+                <td th:text="${book.brief_introduction}" name="brief_introduction"></td>
+                <!--<td>-->
+                    <!--<button id="introductionBtn2" class="layui-btn layui-btn-normal"> <i class="layui-icon">&#xe60b;</i>浏览作者简介</button>-->
+                <!--</td>-->
+                <!--<div class="layui-row" id="test3" style="display: none;">-->
+                    <!--<div class="layui-col-md10">-->
+                        <!--<p th:text="${book.author_introduction}" name="author_introduction"></p>-->
+                    <!--</div>-->
+                <!--</div>-->
+                <td th:text="${book.author_introduction}" name="author_introduction"></td>
+                <td th:text="${book.label_name}" name="label_name"></td>
+                <td th:text="${book.img_url}" name="img_url"></td>
+                <th th:text="${book.book_count}" name="book_count"></th>
+                <td>
+                    <a title="编辑" id= "updateEdit" th:href="'/findBookById?book_id='+${book.book_id}">
+                        <i class="layui-icon">&#xe642;</i>
+                    </a>
+                    <a title="删除"  th:href="'javascript:book_del(this,'+${book.book_id}+');'">
+                        <i class="layui-icon">&#xe640;</i>
+                    </a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div>
+        <input type="hidden" id="totalPageCount" th:value="${pi.pageTotalCount}"/>
+        <div th:include="pageBtn::pageBtn(totalCount=${pi.totalCount},currentPageNo=${pi.pageIndex},totalPageCount=${pi.pageTotalCount})"></div>
+    </div>
+
+    <!--添加模态框-->
+    <div class="layui-row" id="test" style="display: none;">
+        <div class="layui-col-md10">
+            <form class="layui-form" id="addBookForm">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">书名：</label>
+                    <div class="layui-input-block">
+                        <input type="text" lay-verify="required" name="book_name"   class="layui-input" placeholder="请输入书名">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">作者：</label>
+                    <div class="layui-input-block">
+                        <input type="text" lay-verify="required" name="author"  class="layui-input" placeholder="请输入书名">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">出版社：</label>
+                    <div class="layui-input-block">
+                        <input type="text" lay-verify="required" name="publishing_house"   class="layui-input" placeholder="请输入出版社">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">出版日期：</label>
+                    <div class="layui-input-block">
+                        <input type="text" lay-verify="required" name="year_of_publication"   class="layui-input" placeholder="请输入出版日期">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">页数：</label>
+                    <div class="layui-input-block">
+                        <input type="text" lay-verify="required" name="pages"  class="layui-input" placeholder="请输入页数">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">ISBN：</label>
+                    <div class="layui-input-block">
+                        <input type="text" lay-verify="required" name="ISBN"   class="layui-input" placeholder="请输入ISBN">
+                    </div>
+                </div>
+
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">图书简介：</label>
+                    <div class="layui-input-block">
+                        <input type="text" lay-verify="required" name="brief_introduction"  class="layui-input" placeholder="请输入图书简介">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">作者简介：</label>
+                    <div class="layui-input-block">
+                        <input type="text" lay-verify="required" name="author_introduction"   class="layui-input" placeholder="请输入作者简介">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">标签：</label>
+                    <div class="layui-input-block">
+                        <input type="text" lay-verify="required" name="label_name"   class="layui-input" placeholder="请输入标签">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">图片地址：</label>
+                    <div class="layui-input-block">
+                        <input type="text" lay-verify="required" name="img_url"  class="layui-input" placeholder="请输入图片地址">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">剩余数量：</label>
+                    <div class="layui-input-block">
+                        <input type="text" lay-verify="required" name="book_count"  class="layui-input" placeholder="请输入数量">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button type="button" class="layui-btn layui-btn-normal" lay-submit lay-filter="formDemo">提交</button>
+                        <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    layui.use(['jquery','form','layer'], function(){
+        var form = layui.form,
+            $ = layui.jquery;
+//        添加弹出框
+        $("#addBookBtn").click(function () {
+            layer.open({
+                type:1,
+                title:"添加图书",
+                area:["50%"],
+                anim:5,
+                content:$("#test").html()
+            });
+            $("#addBookForm")[0].reset();
+            form.on('submit(formDemo)', function(data) {
+                var param=data.field;
+                $.ajax({
+                    url: '/addBook',
+                    type: "post",
+                    data:JSON.stringify(param),
+                    dataType:"text",
+                    contentType: "application/json; charset=utf-8",
+                    success:function(){
+                        layer.msg('添加成功', {icon: 1, time: 2000});
+                        setTimeout(function () {window.location.href='/findBook';},1000);
+
+                    },
+                    error:function(){
+                        layer.msg('添加失败',{icon:0,time:2000});
+                        setTimeout(function () {window.location.href='/findBook';},1000);
+                    }
+                });
+            });
+        });
+
+//        //        浏览弹出框
+//        $("#introductionBtn").click(function () {
+//            layer.open({
+//                type:1,
+//                title:"图书简介",
+//                area:["50%"],
+//                anim:5,
+//                content:$("#test2").html()
+//            });
+//        });
+//
+//        //        浏览弹出框2
+//        $("#introductionBtn2").click(function () {
+//            layer.open({
+//                type:1,
+//                title:"作者简介",
+//                area:["50%"],
+//                anim:5,
+//                content:$("#test3").html()
+//            });
+//        });
+
+//        获取复选框值
+        form.on('submit(deleteCk)',function (data) {
+            var ck = [];
+            $('.ck input[type=checkbox]:checked').each(function () {
+                ck.push($(this).val());
+            });
+            ck = ck.toString();
+            layer.confirm('确认要删除吗？',function(index){
+                $.get("/deleteSelectedBook",{"ck":ck},function (data) {
+                    if(data =true){
+                        layer.msg('删除成功!',{icon:1,time:2000});
+                        setTimeout(function () {window.location.href='/findBook';},1000);
+
+                    }else {
+                        layer.msg('删除失败!',{icon:1,time:2000});
+                        setTimeout(function () {window.location.href='/findBook';},1000);
+                    }
+                });
+            });
+        })
+    });
+
+
+
+
+    //    删除
+    function book_del(obj,book_id){
+        layer.confirm('确认要删除吗？',function(index){
+            $.get("/deleteBook",{"book_id":book_id},function (data) {
+                if(data =true){
+                    layer.msg('删除成功!',{icon:1,time:2000});
+                    setTimeout(function () {window.location.href='/findBook';},1000);
+
+                }else {
+                    layer.msg('删除失败!',{icon:1,time:2000});
+                    setTimeout(function () {window.location.href='/findBook';},1000);
+                }
+            });
+        });
+    }
+
+//    $(function() {
+//        $("td").on("mouseenter", function() {
+//            //js主要利用offsetWidth和scrollWidth判断是否溢出。
+//            //在这里scrollWidth是包含内容的完全高度，offsetWidth是当前表格单元格的宽度。
+//            if (this.offsetWidth < this.scrollWidth) {
+//                var that = this;
+//                var text = $(this).text();
+//                window.layer.tips(text, that, {
+//                    tips: 1,
+//                    time: 2000
+//                });
+//            }
+//        });
+//    })
+
+</script>
+</body>
+</html>

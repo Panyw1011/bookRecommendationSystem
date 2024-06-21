@@ -1,0 +1,59 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+com:
+  bookrecommend:
+    mahout:
+      table-name: ratings
+      user-column: ID
+      item-column: ISBN
+      pref-column: Rating
+      recommendNum: 10
+    bookrecommend:
+      recommendNum: 10
+spring:
+  datasource:
+    username: root
+    password: 123456
+    url: jdbc:mysql://localhost:3306/bookrecommend?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    filters: stat,wall,log4j     #druid监控配置
+    druid:
+      max-active: 20 # 最大活跃数量 默认8
+      min-idle:  2 # 最小空闲数 默认0
+      initial-size: 5 # 初始连接数
+      max-wait: 2000 # 获取连接最大等待时间 默认 -1
+      validation-query: select 1
+      validation-query-timeout: 5000
+      time-between-eviction-runs-millis: 2000 # 间隔多久进行检测需要关闭的空闲连接
+      min-evictable-idle-time-millis: 600000 # 配置连接在池中最小生存的时间
+      max-wait-thread-count: 20 # 最大等待线程数
+
+mvc:
+  static-path-pattern: /static/**  #配置静态路径
+
+mybatis:
+  type-aliases-package: com.bookrecommend.pojo
+  mapper-locations: classpath:mapper/*.xml
+
+# 支付宝配置
+alipay:
+  # 应用ID
+  appId: 2021000120602777
+  # 应用私钥
+  privateKey: MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQC9lEdrhO46z7d2HJOVMjJvamqgr7Hcd72ieM3vPA/eXdRCNonw64A6VDx+aZEvkex3GOpabfbCLRkFohsd7Y3wL9pNSfGtspxZAQtOsoS1oPddvNRES8WoqcQenqc0LOyxM93T+UJytKnEEbV9TW4ZFLPDBM900uDqUuaxCAZND7jDuEGIcGcL9pkfnSQzVyItEFgzB9wtWkiYxnbFC6IkPhii5CSfLTn/c6n9sIIIlISDW1XKoFeMxNIEYi+tjz3tNxqtKilM2oGoInEUXIeycrXyDKCnJLRTbm3aQ7z479adlshBr5aPz/MY80B0mcIQAemO4i9LND2DpAqw2YxdAgMBAAECggEAGP+uk00KJRMy/A40n93orKx5twq0B4B6rywC6+MdrJLu5HRQqEZFuGtXNsww6vbxGZtde+M4QM61l/qSXNXwe5Wz0bFIf0EoQMxUc2IzAchiFihKTV84h08rn2YIYmbyJ0PRopwh2QJdyI8VQZquQ/xo3/SIbr1ID14zMXD/c7W+2eQhIymlyaK1jxpJ37XfEqDTfrIj7p9zLL8+jwoapXFaFPr+N2w+svT2C5VvctORapson5B5omktkscv4D+wRhc2GneG2nSTQ6hJ5nNtqHy4wLLytG4hPMBDGPVXUEzeOjmlzHRHLjHUeG4XqdbCK4YZz6AqXpk0xkMS0CIHAQKBgQDnX4u704Ypf4Hg1Uj1PcxjQ+Zh2XEiNQoFrxFN2oDJlM7+WvN2d5YegyF8gFLIc35s/AU8Pr4pp8JCqzfRya1B2OPulZxH04svANUyIEcnRbPk8XLzl/pbgX0ZLFhh5M3K58z37Kwd/Zh773ottptoIl/qc/MushFrwrfkn5kHvQKBgQDRwe45ibOlqhBhvPk2bJLl/4CiiBt6I9FsM4PjWn8vEnw1wtfC/yvPYPWqbCQbkRY0BUZ7VuKtTjS9zFD5uQB7DJQ31QhNXEvlGgOtEaq7QC51ITG3vepAzK9Gx55ybph2Qq2NjzC+0ocDNfUDGnaeleHS210j05+6P7ZhkswRIQKBgBMNvj8ggzrlojd2uQRhK3S9QbqrInLztTiUmzMzHEn9dDJkIQqPfJBUsixDkQ2q3S1yb6fvbs+VXh0JZpZjKl5y0wpxzaXomNytD+GJ4PIt/kuLSrEeweJJPpkVGs4s/nmIL0v3dJEfsi/6n7AmCpQ/yHBRTiR5S4/5QBWWww5tAoGATgl2VZWzbkjM+2/Qz7ypEkRyWQWGI3S77yNjR+xdMOgRqfapSvSgGfEatKKy9EaQGh50UGLMxmk4Gfyvi5iWYzEU24i4I//YhI2fHH5cJHoGTrFgy9kuE5mTBCQ0AKLAug6ofufs3LF6ZWlnlBX+V5WvhED0b+XFoQcfFUIGBcECgYALNzjBDIuxYGG/DM2FuqKtgMOpto0RnQhKs3ES/GobqFPb/MCUtsH0C98O7531/DyVZCrf1hMFgXAjszlUNGj6XWDZ6HAnoQFm3GoWtPfQ5fAR2oHxVD5W37+mY38nziGZDIldoQYjteeWsfLTsFZMJ3kkLMcszaSim3x6INibiw==
+  # 支付宝公钥
+  publicKey: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqab6B8KB/BH9GUCQX6rIO82I7V6Jgi0uAI7Wt2jeBZsqM4hs8BVhV+yACjoqlp7mdtLPi6kp1cCwJNDkNSascBBm0PSLgUeyVzNyfbbQV5WOmrurG6CK8ADJ9d6FbkOJfTGHoCgd5FIaX/5b2FaQeaPrnzHCUZWoCqgsBWJr70E6+lyFv2atoI6KDeas+mXl7Z9DXKMsF3V3ITvVCZyp0AhPnc5rbzUolK30j3XsGPR3wdsPHSmbLdy/JoKBJPbGZYS2K1dNxxyMtmcGzYxC0+FEoAoFSgsaQoPk2IR0tf7ejhG/qOi0p4zgWjZScvK8wRYO29xH0y0oGQzqe870DwIDAQAB
+  # 支付宝网关配置
+  gateway: openapi.alipaydev.com
+  # 支付宝前台跳转地址
+  returnUrl: http://localhost:8080/user_borrow
+  # 支付宝后台通知地址
+  notifyUrl: http://localhost:8080/api/alipay/notify_url
+  # 支付宝前台手机网页支付中途取消跳转地址
+  errorUrl: http://localhost:8080/user_borrow
+
+

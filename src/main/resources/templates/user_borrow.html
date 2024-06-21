@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<!--suppress ThymeleafVariablesResolveInspection -->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>图书馆-借阅历史</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" th:href="@{/layui/css/layui.css}">
+  <link rel="stylesheet" th:href="@{/css/font.css}">
+  <link rel="stylesheet" th:href="@{/css/index.css}">
+  <link rel="stylesheet" th:href="@{/css/pg_btn.css}">
+  <script th:src="@{/layui/layui.js}"></script>
+  <script th:src="@{/layui/jquery-3.5.1.min.js}"></script>
+</head>
+<body>
+
+<div class="house-header">
+  <div class="layui-container">
+    <div class="house-nav">
+      <span class="layui-breadcrumb" lay-separator="|">
+        <a th:href="${session.currentUser == null ? '/user_login' : '/userInfo'}"
+           th:text="${session.currentUser == null ? '登录' : '欢迎您：'+session.currentUser.getUsername()}"></a>
+        <a th:if="${session.currentUser != null}" href="/userLoginOut">退出</a>
+        <a href="/user_borrow">我的借阅</a>
+        <a href="">在线客服</a>
+      </span>
+      <span class="layui-breadcrumb house-breadcrumb-icon" lay-separator=" ">
+        <a id="search"><i class="layui-icon layui-icon-house-find"></i></a>
+        <a href="login.html"><i class="layui-icon layui-icon-username"></i></a>
+        <a href="usershop.html"><i class="layui-icon layui-icon-house-shop"></i></a>
+      </span>
+    </div>
+    <div class="house-banner layui-form">
+      <a class="banner" href="index.html">
+        <img th:src="@{/img/banner.png}" alt="图书馆">
+      </a>
+      <div class="layui-input-inline">
+        <form class="layui-form layui-col-md12 x-so" action="/allBook" >
+          <input type="text" placeholder="搜索好书" class="layui-input" name="book_name" id="book_name">
+          <input class="layui-input" type="hidden" name="pageIndex" value="1">
+          <input class="layui-input" type="hidden" name="pageSize" value="20">
+          <button class="layui-btn"  lay-submit="" lay-filter="search"><i class="layui-icon layui-icon-house-find"></i></button>
+        </form>
+      </div>
+      <a class="shop" href="/user_collect">
+        <i class="layui-icon">&#xe600;</i>
+      </a>
+    </div>
+    <ul class="layui-nav close" style="padding-left: 29%;width: 100%">
+      <li class="layui-nav-item "><a href="/index">首页</a></li>
+      <li class="layui-nav-item"><a href="/allBook">所有图书</a></li>
+      <li class="layui-nav-item"><a href="/recommend">图书推荐</a></li>
+      <li class="layui-nav-item"><a href="/newBook">新书速递</a></li>
+    </ul>
+    <button id="switch">
+      <span></span><span class="second"></span><span class="third"></span>
+    </button>
+  </div>
+</div>
+
+<div class="layui-container house-usershop" style="padding-top: 40px">
+  <table id="house-usershop-table" style="width: 100%;margin: auto;padding-top: 40px">
+    <tr class="t-head" style="height: 50px;border: 1px solid #e6e6e6;background-color: #f5f5f5;">
+      <td><p>选择</p></td>
+      <td><p>图书</p></td>
+      <td><p>借阅时间</p></td>
+      <td><p>剩余归还天数</p></td>
+      <td><p>续借次数</p></td>
+      <td><p>状态</p></td>
+      <td><p>欠费金额（元）</p></td>
+      <td><p>操作</p></td>
+    </tr>
+    <tr th:each="pi : ${borrowList}" class="t-body" style="height: 150px;border: 1px solid #e6e6e6;">
+      <td class="ck"><input type="checkbox" name="ck" th:value="${pi.b_id}" lay-skin="primary" ></td>
+      <td>
+        <a th:href="'/detail?book_id='+${pi.book_id}" class="layui-col-xs3 text" >
+          <div><img th:src="'https://images.weserv.nl/?url='+${pi.img_url}" style="width: 90px;height: 90px"></div>
+          <p th:text="${pi.book_name}" style="width: 90px"></p>
+        </a>
+      </td>
+      <td th:text="${#dates.format(pi.borrow_time,'yyyy-MM-dd HH:mm:ss')}"></td>
+      <td th:text="${pi.remain_day}"></td>
+      <td th:text="${pi.renew_times}"></td>
+      <td th:text="${pi.state}"></td>
+      <td th:text="${'￥'+pi.money}" name="money"></td>
+      <td>
+        <button class="layui-btn" style="width:60px;height: 30px;line-height: 0" th:if="${!pi.state.equals('已归还')}" th:onclick="'javascript:renew(this,'+${pi.b_id}+','+${pi.remain_day}+','+${pi.renew_times}+');'">续借</button>
+        <button class="layui-btn" style="width:60px;height: 30px;line-height: 0" th:if="${pi.state.equals('已归还')}" th:onclick="'javascript:renew2(this);'">续借</button>
+        <form enctype="multipart/form-data" action="/api/alipay/page" method="post" style="display: inline">
+          <input type="hidden" name="b_id" th:value="${pi.b_id}">
+          <input type="hidden" name="money" th:value="${pi.money}">
+          <button class="layui-btn" style="width:60px;height: 30px;line-height: 0" type="submit" th:if="${pi.money > 0}">结算</button>
+          <button class="layui-btn" style="width:60px;height: 30px;background-color: #4d4d4d;line-height: 0" type="submit" th:if="${pi.money == 0}" disabled >结算</button>
+        </form>
+        <button class="layui-btn" style="width:60px;height: 30px;line-height: 0" th:if="${!pi.state.equals('已归还')}" th:onclick="'javascript:check('+${pi.b_id}+');'">归还</button>
+        <button class="layui-btn" style="width:60px;height: 30px;line-height: 0" th:if="${pi.state.equals('已归还')}" th:onclick="'javascript:retu2(this);'">归还</button>
+      </td>
+
+    </tr>
+  </table>
+  <p>猜您喜欢</p>
+  <div class="layui-row layui-col-space20">
+    <a th:each="randBook : ${randBook}" th:href="'/detail?book_id='+${randBook.book_id}" class="layui-col-xs3 text">
+      <div><img th:src="'https://images.weserv.nl/?url='+${randBook.img_url}" style="width: 285px;height: 285px"></div>
+      <p th:text="${randBook.book_name}"></p>
+      <p class="price" th:text="'作者:'+${randBook.author}"></p>
+    </a>
+  </div>
+</div>
+
+<div class="house-footer">
+  <div class="layui-container">
+    <div class="about">
+      <span class="layui-breadcrumb" lay-separator="|">
+        <a href="about.html">关于我们</a>
+        <a href="about.html">帮助中心</a>
+        <a href="about.html">联系我们</a>
+        <a href="about.html">法律声明</a>
+        <a href="about.html">图书馆合作</a>
+      </span>
+      <p>图书馆版权所有 &copy; 2020-2022</p>
+    </div>
+  </div>
+</div>
+
+<script th:src="@{/layui/layui.js}"></script>
+<script>
+    layui.use(['jquery','form','layer','rate','element'], function(){
+        var form = layui.form,
+            $ = layui.jquery;
+        var rate=layui.rate;
+        var element = layui.element;
+    });
+
+    window.check = function (b_id) {
+        window.location.href='/return_book?b_id='+b_id;
+    };
+
+    function renew(obj,b_id,remain_day,renew_times) {
+        if (renew_times>5){
+            layer.msg('该借阅图书续借次数大于5，无法续借！',{icon:1,time:2000});
+        }else {
+            if (remain_day >7){
+                layer.msg('该借阅图书剩余归还时间大于7天，无需续借！',{icon:1,time:2000});
+            }else if (remain_day < 0){
+                layer.msg('该借阅图书已逾期，请先交清欠费！',{icon:1,time:2000});
+            }else {
+                layer.confirm('确认要续借这本书吗？',function(index){
+                    $.get("/renew",{"b_id": b_id}, function (data) {
+                        if(data = true){
+                            layer.msg('续借成功！',{icon:1,time:2000});
+                            setTimeout(function () {},1000);
+
+                        }else {
+                            layer.msg('续借失败！',{icon:1,time:2000});
+                            setTimeout(function () {},1000);
+                        }
+                    });
+                });
+            }
+        }
+    }
+
+    function retu2(obj) {
+        layer.msg('已归还，无需操作！',{icon:1,time:2000});
+    }
+
+    function renew2(obj) {
+        layer.msg('已归还，无法续借！',{icon:1,time:2000});
+    }
+</script>
+
+</body>
+</html>

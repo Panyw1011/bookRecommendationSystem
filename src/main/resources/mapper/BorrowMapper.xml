@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bookrecommend.dao.BorrowDao">
+    <select id="getBorrowList" resultType="Borrow">
+        SELECT b.b_id, b.book_id, b.u_id, b.borrow_time, b.remain_day, b.renew_times, b.state, b.money FROM borrow b WHERE 1=1
+        <if test="book_id != null and book_id != ''">
+            AND b.book_id like concat('%',#{book_id},'%')
+        </if>
+        <if test="username != null and username != ''">
+            AND u.username like concat('%',#{username},'%')
+        </if>
+        <if test="state != null and state != ''">
+            AND b.state like concat('%',#{state},'%')
+        </if>
+        limit #{currentPage},#{pageSize}
+    </select>
+
+    <select id="totalCount" resultType="Integer">
+        SELECT COUNT(b_id) FROM borrow b,user u WHERE 1=1 AND b.u_id = u.u_id
+        <if test="book_id != null and book_id != ''">
+            AND b.book_id like concat('%',#{book_id},'%')
+        </if>
+        <if test="username != null and username != ''">
+            AND u.username like concat('%',#{username},'%')
+        </if>
+        <if test="state != null and state != ''">
+            AND b.state like concat('%',#{state},'%')
+        </if>
+    </select>
+
+    <insert id="addBorrow" parameterType="Borrow">
+        INSERT INTO borrow (book_id, u_id, borrow_time, state, money)
+        VALUE (#{book_id}, #{u_id}, now(), '借阅中', 0)
+    </insert>
+
+    <select id="findBorrowById" resultType="Borrow">
+        SELECT b.b_id, b.book_id, b.u_id, b.borrow_time,b.remain_day, b.renew_times, b.state, b.money FROM borrow b WHERE  b.b_id = #{b_id}
+    </select>
+
+    <update id="updateBorrow" parameterType="Borrow">
+        UPDATE borrow
+        <set>
+            <if test="book_id!=null and book_id!=''">
+                book_id = #{book_id},
+            </if>
+            <if test="renew_times!=null">
+                renew_times = #{renew_times},
+                remain_day = 30 * #{renew_times},
+            </if>
+            <if test="state!=null and state!=''">
+                state = #{state},
+            </if>
+            <if test="money!=null and money!=''">
+                money = #{money},
+            </if>
+        </set>
+        WHERE b_id = #{b_id}
+    </update>
+
+    <insert id="borrow">
+        INSERT INTO borrow(book_id, u_id, borrow_time, remain_day, renew_times, state)
+        VALUE (#{book_id},#{u_id},now(),30,0,'借阅中')
+    </insert>
+
+    <select id="findBorrowByUerId" resultType="Borrow">
+        SELECT a.b_id, a.book_id ,b.img_url, b.book_name, a.borrow_time, a.remain_day, a.renew_times, a.state, a.money FROM borrow a,books b WHERE a.book_id = b.book_id AND u_id = #{u_id}
+        ORDER BY a.b_id DESC
+    </select>
+
+    <select id="findBorrowByBId" resultType="Borrow">
+        SELECT a.b_id, a.book_id ,b.img_url, b.book_name, a.borrow_time, a.remain_day, a.renew_times, a.state, a.money FROM borrow a,books b WHERE a.book_id = b.book_id AND a.b_id = #{b_id}
+    </select>
+
+    <update id="renew">
+        UPDATE borrow SET remain_day = remain_day + 30 ,renew_times = renew_times + 1 WHERE b_id = #{b_id}
+    </update>
+
+    <update id="retu">
+        UPDATE borrow SET state = '已归还' WHERE b_id = #{b_id}
+    </update>
+
+    <select id="isBorrow" resultType="Integer">
+        SELECT COUNT(b_id) FROM borrow WHERE book_id = #{book_id} AND u_id = #{u_id} AND state != '已归还'
+    </select>
+
+    <update id="payMoney">
+        UPDATE borrow SET money = 0 WHERE b_id = #{b_id}
+    </update>
+</mapper>

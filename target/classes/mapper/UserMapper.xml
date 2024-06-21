@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bookrecommend.dao.UserDao">
+    <select id="userLogin" resultType="com.bookrecommend.pojo.User" parameterType="com.bookrecommend.pojo.User">
+        SELECT * FROM user WHERE login_name = #{login_name} AND login_password = #{login_password}
+    </select>
+
+    <select id="getUserList" resultType="User">
+        SELECT * FROM user WHERE 1=1
+        <if test="u_id != null and u_id != ''">
+            AND u_id like concat('%',#{u_id},'%')
+        </if>
+        <if test="username != null and username != ''">
+            AND username like concat('%',#{username},'%')
+        </if>
+        <if test="phone != null and phone != ''">
+            AND phone like concat('%',#{phone},'%')
+        </if>
+        limit #{currentPage},#{pageSize}
+    </select>
+
+    <select id="totalCount" resultType="Integer">
+        SELECT COUNT(u_id) FROM user WHERE 1=1
+        <if test="u_id != null and u_id != ''">
+            AND u_id like concat('%',#{u_id},'%')
+        </if>
+        <if test="username != null and username != ''">
+            AND username like concat('%',#{username},'%')
+        </if>
+        <if test="phone != null and phone != ''">
+            AND phone like concat('%',#{phone},'%')
+        </if>
+    </select>
+
+    <insert id="addUser" parameterType="User">
+        INSERT INTO user (login_name, login_password, username, u_sex, birthday, phone)
+        VALUE (#{phone}, 'E10ADC3949BA59ABBE56E057F20F883E', #{username}, #{u_sex}, #{birthday}, #{phone})
+    </insert>
+
+    <delete id="delUser">
+        DELETE FROM user WHERE u_id = #{u_id}
+    </delete>
+
+    <delete id="deleteSelectedUser" parameterType="String">
+        DELETE FROM user WHERE u_id IN (${ck})
+    </delete>
+
+    <select id="findUserById" resultType="User">
+        SELECT * FROM user WHERE u_id = #{u_id}
+    </select>
+
+    <update id="updateUser" parameterType="User">
+        UPDATE user
+        <set>
+            <if test="username!=null and username!=''">
+                username = #{username},
+            </if>
+            <if test="u_sex!=null">
+                u_sex = #{u_sex},
+            </if>
+            <if test="birthday!=null">
+                birthday = #{birthday},
+            </if>
+            <if test="phone!=null and phone!=''">
+                phone = #{phone},
+            </if>
+        </set>
+        WHERE u_id = #{u_id}
+    </update>
+
+    <update id="updatePassword">
+        UPDATE user SET login_password = #{login_password} WHERE u_id = #{u_id}
+    </update>
+
+    <select id="getUserChartData" resultType="map">
+        SELECT u_sex,COUNT(u_sex) AS count FROM user GROUP BY u_sex
+    </select>
+</mapper>

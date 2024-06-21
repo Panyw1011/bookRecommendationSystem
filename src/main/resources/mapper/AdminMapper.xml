@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bookrecommend.dao.AdminDao">
+    <select id="adminLogin" resultType="com.bookrecommend.pojo.Admin" parameterType="com.bookrecommend.pojo.Admin">
+        SELECT * FROM admin WHERE login_name = #{login_name} AND login_password = #{login_password}
+    </select>
+
+    <update id="resetLoginTime">
+        UPDATE admin SET login_time = now()
+    </update>
+
+    <select id="getAdminList" resultType="Admin">
+        SELECT * FROM admin WHERE 1=1
+        <if test="a_id != null and a_id != ''">
+            AND a_id like concat('%',#{a_id},'%')
+        </if>
+        <if test="username != null and username != ''">
+            AND username like concat('%',#{username},'%')
+        </if>
+        <if test="phone != null and phone != ''">
+            AND phone like concat('%',#{phone},'%')
+        </if>
+        limit #{currentPage},#{pageSize}
+    </select>
+
+    <select id="totalCount" resultType="Integer">
+        SELECT COUNT(a_id) FROM admin WHERE 1=1
+        <if test="a_id != null and a_id != ''">
+            AND a_id like concat('%',#{a_id},'%')
+        </if>
+        <if test="username != null and username != ''">
+            AND username like concat('%',#{username},'%')
+        </if>
+        <if test="phone != null and phone != ''">
+            AND phone like concat('%',#{phone},'%')
+        </if>
+    </select>
+
+    <insert id="addAdmin" parameterType="Admin">
+        INSERT INTO admin (login_name, login_password, username, sex, birthday, phone, email, r_id, cre_time)
+        VALUE (#{phone}, 'E10ADC3949BA59ABBE56E057F20F883E', #{username}, #{sex}, #{birthday}, #{phone}, #{email}, #{r_id}, now())
+    </insert>
+
+    <delete id="delAdmin">
+        DELETE FROM admin WHERE a_id = #{a_id}
+    </delete>
+
+    <delete id="deleteSelectedAdmin" parameterType="String">
+        DELETE FROM admin WHERE a_id IN (${ck})
+    </delete>
+
+    <select id="findAdminById" resultType="Admin">
+        SELECT * FROM admin WHERE a_id = #{a_id}
+    </select>
+
+    <update id="updateAdmin" parameterType="Admin">
+        UPDATE admin
+        <set>
+            <if test="username!=null and username!=''">
+                username = #{username},
+            </if>
+            <if test="sex!=null">
+                sex = #{sex},
+            </if>
+            <if test="birthday!=null">
+                birthday = #{birthday},
+            </if>
+            <if test="phone!=null and phone!=''">
+                phone = #{phone},
+            </if>
+            <if test="email!=null and email!=''">
+                email = #{email},
+            </if>
+            <if test="r_id!=null">
+                r_id = #{r_id},
+            </if>
+        </set>
+        WHERE a_id = #{a_id}
+    </update>
+</mapper>

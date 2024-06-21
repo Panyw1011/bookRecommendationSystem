@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<!--suppress ThymeleafVariablesResolveInspection -->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link rel="stylesheet" th:href="@{/css/font.css}">
+    <link rel="stylesheet" th:href="@{/css/xadmin.css}">
+    <link rel="stylesheet" th:href="@{/css/pg_btn.css}">
+    <script th:src="@{/layui/jquery-3.5.1.min.js}"></script>
+    <script th:src="@{/layui/layui.js}"></script>
+    <script th:src="@{/js/xadmin.js}"></script>
+    <title>修改管理员信息</title>
+</head>
+<body>
+<div class="x-body">
+    <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="/findAdmin" title="返回">
+        <i class="layui-icon" style="line-height:30px">&#xe65c;</i></a>
+    <form class="layui-form" action="/updateAdmin" method="post"  id="f_auto" accept-charset="UTF-8">
+        <input type="hidden" th:value="${modAdmin.a_id}" name="a_id" id="a_id"/>
+        <div class="layui-form-item">
+            <label for="s_id" class="layui-form-label">
+                <span class="f_sp">ID</span>
+            </label>
+            <div class="layui-input-inline">
+                <input type="text" id="s_id" name="s_id"
+                       autocomplete="off" th:value="${modAdmin.a_id}" class="layui-input" disabled>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label for="username" class="layui-form-label">
+                <span class="f_sp">姓名</span>
+            </label>
+            <div class="layui-input-inline">
+                <input type="text" id="username" name="username"
+                       autocomplete="off" th:value="${modAdmin.username}" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label for="sex" class="layui-form-label">
+                <span class="f_sp">性别</span>
+            </label>
+            <div class="layui-input-inline" id="sex">
+                <input type="radio" name="sex" id="s_male" value="1" title="男" th:checked="${modAdmin.sex} eq '1'">
+                <input type="radio" name="sex" id="s_female" value="0" title="女" th:checked="${modAdmin.sex} eq '0'">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label for="birthday" class="layui-form-label">
+                <span class="f_sp">出生日期</span>
+            </label>
+            <div class="layui-input-inline">
+                <input type="date" id="birthday" name="birthday"
+                       autocomplete="off" th:value="${#dates.format(modAdmin.birthday,'yyyy-MM-dd')}" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label for="phone" class="layui-form-label">
+                <span class="f_sp">电话</span>
+            </label>
+            <div class="layui-input-inline">
+                <input type="text" id="phone" name="phone"
+                       autocomplete="off" th:value="${modAdmin.phone}" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label for="email" class="layui-form-label">
+                <span class="f_sp">邮箱</span>
+            </label>
+            <div class="layui-input-inline">
+                <input type="text" id="email" name="email"
+                       autocomplete="off" th:value="${modAdmin.email}" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label for="r_id" class="layui-form-label">
+                <span class="f_sp">管理员类型</span>
+            </label>
+            <div class="layui-input-inline" id="r_id">
+                <input type="radio" name="r_id" id="r_id0" value="1" title="超级管理员" th:checked="${modAdmin.r_id} eq '1'">
+                <input type="radio" name="r_id" id="r_id1" value="2" title="普通管理员" th:checked="${modAdmin.r_id} eq '2'">
+            </div>
+        </div>
+
+        <div class="layui-form-item" id="btn_xg">
+            <button  class="layui-btn"  id="btn_on" lay-filter="updateForm" lay-submit="">
+                修改
+            </button>
+        </div>
+    </form>
+</div>
+</body>
+</html>

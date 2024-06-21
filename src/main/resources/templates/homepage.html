@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<!--suppress ThymeleafVariablesResolveInspection -->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link rel="stylesheet" th:href="@{/css/font.css}">
+    <link rel="stylesheet" th:href="@{/css/xadmin.css}">
+    <link rel="stylesheet" th:href="@{/css/pg_btn.css}">
+    <script th:src="@{/layui/jquery-3.5.1.min.js}"></script>
+    <script th:src="@{/layui/layui.js}"></script>
+    <script th:src="@{/js/xadmin.js}"></script>
+    <script type="text/javascript" th:src="@{/echarts/echarts.min.js}"></script>
+    <title>图书馆后台管理</title>
+</head>
+<body>
+<!--顶部-->
+<div class="container">
+    <div class="logo"><a>图书馆管理后台</a></div>
+    <div class="left_open">
+        <i title="展开左侧栏" class="iconfont">&#xe699;</i>
+    </div>
+    <ul class="layui-nav right" lay-filter="">
+        <li class="layui-nav-item">
+            <a href="javascript:;" ><img src="/images/avatar1.jpg" class="layui-nav-img" th:text="${session.currentAdmin.getUsername()}"></a>
+            <!-- 二级菜单 -->
+            <dl class="layui-nav-child">
+                <dd><a href="/loginOut">退出</a></dd>
+            </dl>
+        </li>
+        <li class="layui-nav-item to-index"><a href="/index">前台首页</a></li>
+    </ul>
+</div>
+<!--中部-->
+<!--左侧-->
+<div class="left-nav">
+    <div id="side-nav">
+        <ul id="nav">
+            <li>
+                <a href="javascript:;">
+                    <i class="iconfont">&#xe723;</i>
+                    <cite>个人信息</cite>
+                    <i class="iconfont nav_right">&#xe697;</i>
+                </a>
+                <ul class="sub-menu">
+                    <li>
+                        <a _href="/myInfo">
+                            <i class="iconfont">&#xe6a7;</i>
+                            <cite>个人资料</cite>
+                        </a>
+                    </li >
+                </ul>
+            </li>
+            <li>
+                <a href="javascript:;">
+                    <i class="iconfont">&#xe6b8;</i>
+                    <cite>借阅者管理</cite>
+                    <i class="iconfont nav_right">&#xe697;</i>
+                </a>
+                <ul class="sub-menu">
+                    <li>
+                        <a _href="/findUser">
+                            <i class="iconfont">&#xe6a7;</i>
+                            <cite>借阅者信息</cite>
+                        </a>
+                    </li >
+                </ul>
+            </li>
+
+            <li>
+                <a href="javascript:;">
+                    <i class="iconfont">&#xe723;</i>
+                    <cite>图书管理</cite>
+                    <i class="iconfont nav_right">&#xe697;</i>
+                </a>
+                <ul class="sub-menu">
+                    <li>
+                        <a _href="/findBook">
+                            <i class="iconfont">&#xe6a7;</i>
+                            <cite>图书列表</cite>
+                        </a>
+                    </li >
+                    <li>
+                        <a _href="/findLabel">
+                            <i class="iconfont">&#xe6a7;</i>
+                            <cite>图书标签列表</cite>
+                        </a>
+                    </li >
+                </ul>
+            </li>
+
+            <li>
+                <a href="javascript:;">
+                    <i class="iconfont">&#xe723;</i>
+                    <cite>借阅管理</cite>
+                    <i class="iconfont nav_right">&#xe697;</i>
+                </a>
+                <ul class="sub-menu">
+                    <li>
+                        <a _href="/findBorrow">
+                            <i class="iconfont">&#xe6a7;</i>
+                            <cite>借阅记录</cite>
+                        </a>
+                    </li >
+                    <li>
+                        <a _href="/findPay">
+                            <i class="iconfont">&#xe6a7;</i>
+                            <cite>欠费记录</cite>
+                        </a>
+                    </li >
+                </ul>
+            </li>
+
+            <li>
+                <a href="javascript:;">
+                    <i class="iconfont">&#xe723;</i>
+                    <cite>评论管理</cite>
+                    <i class="iconfont nav_right">&#xe697;</i>
+                </a>
+                <ul class="sub-menu">
+                    <li>
+                        <a _href="/findComment">
+                            <i class="iconfont">&#xe6a7;</i>
+                            <cite>图书评论列表</cite>
+                        </a>
+                    </li >
+                    <!--<li>-->
+                        <!--<a _href="/findLabel">-->
+                            <!--<i class="iconfont">&#xe6a7;</i>-->
+                            <!--<cite>图书标签列表</cite>-->
+                        <!--</a>-->
+                    <!--</li >-->
+                </ul>
+            </li>
+
+            <li>
+                <a href="javascript:;">
+                    <i class="iconfont">&#xe726;</i>
+                    <cite>管理员管理</cite>
+                    <i class="iconfont nav_right">&#xe697;</i>
+                </a>
+                <ul class="sub-menu">
+                    <li>
+                        <a _href="/findAdmin" th:if="${session.currentAdmin.getR_id() == 1}">
+                            <i class="iconfont">&#xe6a7;</i>
+                            <cite>管理员列表</cite>
+                        </a>
+                        <a _href="" onclick="javascript:tip()" th:if="${session.currentAdmin.getR_id() == 2}">
+                            <i class="iconfont">&#xe6a7;</i>
+                            <cite>管理员列表</cite>
+                        </a>
+                    </li >
+                </ul>
+            </li>
+        </ul>
+    </div>
+</div>
+<!--右侧-->
+<div class="page-content">
+    <div class="layui-tab tab" lay-filter="xbs_tab" lay-allowclose="false">
+        <ul class="layui-tab-title">
+            <li class="home"><i class="layui-icon">&#xe68e;</i>图书馆数据</li>
+        </ul>
+        <div class="layui-tab-content" >
+            <div class="layui-tab-item layui-show o_div">
+                <div class="layui-card">
+                    <div class="layui-card-body">
+                         <!--受欢迎图书top10-->
+                        <div id="div_sale_chart" style="height:300px;margin: auto;"></div>
+                    </div>
+                </div>
+                <div class="layui-card">
+                    <div class="layui-card-body">
+                         <!--男女比例-->
+                        <div id="div_compare_chart" style="width: 600px;height:300px;margin: auto;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--底部-->
+<div class="footer">
+    <div class="copyright">@Copyright © 2020-2022 版权所有</div>
+</div>
+<script type="text/javascript">
+    layui.use(['jquery','form','layer'],function () {
+        var $ = layui.jquery;
+        var layer = layui.layer,
+            form = layui.form;
+
+        // 初始化1
+        var saleChart = echarts.init(document.getElementById('div_sale_chart'));
+        // 配置相关信息1
+        saleChart.setOption({
+            title: {
+                text: '受欢迎图书Top10'
+            },
+            tooltip: {},
+            legend: {
+                data:['喜欢人数(人)']
+            },
+            xAxis: {
+                data: [],
+                axisLabel: {
+                    interval:0,
+                    rotate:-30
+                }
+            },
+
+            yAxis: {},
+            series: [{
+                name: '喜欢人数(人)',
+                type: 'bar',
+                data: []
+            }]
+        });
+
+        // 初始化2
+        var compareChart = echarts.init(document.getElementById('div_compare_chart'));
+        // 配置相关信息2
+        compareChart.setOption({
+            title: {
+                text: '借阅者性别分布',
+            },
+            tooltip: {},
+            legend: {
+                data:['性别']
+            },
+            series: [{
+                name: '性别',
+                type: 'pie',
+                itemStyle: {
+                    // 阴影的大小
+                    shadowBlur: 200,
+                    // 阴影水平方向上的偏移
+                    shadowOffsetX: 0,
+                    // 阴影垂直方向上的偏移
+                    shadowOffsetY: 0,
+                    // 阴影颜色
+                    shadowColor: 'rgba(0, 0, 0, 0)'
+                },
+                radius: '80%',
+                data:[]
+            }]
+        });
+
+
+        $.ajax({
+            url: '/getChartData',
+            type: "post",
+            success: function (result) {
+                if(result.code==0){
+                    //填入 图书数据
+                    saleChart.setOption({
+                        xAxis: {
+                            data: result.data.book.book_name
+                        },
+                        series: [{
+                            // 根据名字对应到相应的系列
+//                            name: '销售量(本)',
+                            data: result.data.book.number_of_people
+                        }]
+                    });
+                    //填入 性别数据
+                    compareChart.setOption({
+                        series: [{
+//                            name: '性别',
+                            // 根据名字对应到相应的系列
+                            data: result.data.sex
+                        }]
+                    });
+                }else{
+
+                }
+            },
+            error: function () {
+                layer.alert("error");
+            }
+        });
+    })
+
+    function tip() {
+        layer.msg('您没有权限浏览此数据!',{icon:2,time:2000});
+    }
+</script>
+</body>
+</html>

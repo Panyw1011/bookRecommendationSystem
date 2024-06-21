@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bookrecommend.dao.CollectDao">
+
+    <insert id="collect" parameterType="Integer">
+        INSERT INTO collect (u_id,book_id)
+        SELECT #{u_id},#{book_id} FROM dual
+        WHERE NOT EXISTS (SELECT co_id FROM collect WHERE u_id = #{u_id} AND book_id = #{book_id})
+    </insert>
+
+    <select id="getCollectById" resultType="Collect">
+        SELECT c.co_id, b.book_id, b.book_name, b.author, b.img_url FROM collect c, books b
+        WHERE c.book_id = b.book_id AND c.u_id = #{u_id}
+        limit #{currentPage},#{pageSize}
+    </select>
+
+    <select id="totalCount" resultType="Integer">
+        SELECT COUNT(c.co_id) FROM collect c, books b
+        WHERE c.book_id = b.book_id AND c.u_id = #{u_id}
+    </select>
+
+    <delete id="delCollect">
+        DELETE FROM collect WHERE co_id = #{co_id}
+    </delete>
+
+
+
+</mapper>

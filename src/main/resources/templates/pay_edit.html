@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<!--suppress ThymeleafVariablesResolveInspection -->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link rel="stylesheet" th:href="@{/css/font.css}">
+    <link rel="stylesheet" th:href="@{/css/xadmin.css}">
+    <link rel="stylesheet" th:href="@{/css/pg_btn.css}">
+    <script th:src="@{/layui/jquery-3.5.1.min.js}"></script>
+    <script th:src="@{/layui/layui.js}"></script>
+    <script th:src="@{/js/xadmin.js}"></script>
+    <title>修改欠费信息</title>
+</head>
+<body>
+<div class="x-body">
+    <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="/findPay" title="返回">
+        <i class="layui-icon" style="line-height:30px">&#xe65c;</i></a>
+    <form class="layui-form" action="/updatePay" method="post"  id="f_auto" accept-charset="UTF-8">
+        <input type="hidden" th:value="${modPay.b_id}" name="b_id" id="b_id"/>
+        <div class="layui-form-item">
+            <label for="s_id" class="layui-form-label">
+                <span class="f_sp">借阅记录ID</span>
+            </label>
+            <div class="layui-input-inline">
+                <input type="text" id="s_id" name="s_id"
+                       autocomplete="off" th:value="${modPay.b_id}" class="layui-input" disabled>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label for="reason" class="layui-form-label">
+                <span class="f_sp">欠费原因</span>
+            </label>
+            <div class="layui-input-inline">
+                <div class="layui-input-inline" id="reason">
+                    <input type="radio" name="reason" id="reason1" value="1" title="逾期" th:checked="${modPay.reason} eq '1'">
+                    <input type="radio" name="reason" id="reason2" value="2" title="破损" th:checked="${modPay.reason} eq '2'">
+                    <input type="radio" name="reason" id="reason3" value="3" title="丢失" th:checked="${modPay.reason} eq '3'">
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label for="arrears_day" class="layui-form-label">
+                <span class="f_sp">欠费天数</span>
+            </label>
+            <div class="layui-input-inline">
+                <input type="text" id="arrears_day" name="arrears_day"
+                       autocomplete="off" th:value="${modPay.arrears_day}" class="layui-input" disabled>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label for="money" class="layui-form-label">
+                <span class="f_sp">欠费金额</span>
+            </label>
+            <div class="layui-input-inline">
+                <input type="text" id="money" name="money"
+                       autocomplete="off" th:value="${modPay.money}" class="layui-input" disabled>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label for="is_pay" class="layui-form-label">
+                <span class="f_sp">支付状态</span>
+            </label>
+            <div class="layui-input-inline" id="is_pay">
+                <input type="radio" name="is_pay" id="s_pay0" value="0" title="未支付" th:checked="${modPay.is_pay} eq '0'">
+                <input type="radio" name="is_pay" id="s_pay1" value="1" title="已支付" th:checked="${modPay.is_pay} eq '1'">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label for="comment" class="layui-form-label">
+                <span class="f_sp">备注</span>
+            </label>
+            <div class="layui-input-inline">
+                <input type="text" id="comment" name="comment"
+                       autocomplete="off" th:value="${modPay.comment}" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item" id="btn_xg">
+            <button  class="layui-btn"  id="btn_on" lay-filter="updateForm" lay-submit="">
+                修改
+            </button>
+        </div>
+    </form>
+</div>
+</body>
+</html>

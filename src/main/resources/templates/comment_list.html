@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<!--suppress ThymeleafVariablesResolveInspection -->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link rel="stylesheet" th:href="@{/css/font.css}">
+    <link rel="stylesheet" th:href="@{/css/xadmin.css}">
+    <link rel="stylesheet" th:href="@{/css/pg_btn.css}">
+    <script th:src="@{/layui/jquery-3.5.1.min.js}"></script>
+    <script th:src="@{/layui/layui.js}"></script>
+    <script th:src="@{/js/xadmin.js}"></script>
+    <title>图书评论信息</title>
+    <style type="text/css">
+        .layui-table{
+            text-align: center;
+        }
+        .layui-table th{
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div class="x-nav">
+      <span class="layui-breadcrumb">
+        <a href="">首页</a>
+        <a href="/findComment">图书评论信息</a>
+      </span>
+    <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="/findComment" title="刷新">
+        <i class="layui-icon" style="line-height:30px">&#xe9aa;</i></a>
+</div>
+<div class="x-body">
+    <div class="layui-row">
+        <form class="layui-form layui-col-md12 x-so" action="/findComment" >
+            <input class="layui-input" placeholder="请输入ID" name="c_id" id="c_id">
+            <input class="layui-input" placeholder="请输入书名" name="book_name" id="book_name">
+            <input class="layui-input" placeholder="请输入用户名" name="username" id="username">
+            <input class="layui-input" placeholder="请输入评论" name="comment" id="comment">
+            <input class="layui-input" type="hidden" name="pageIndex" value="1">
+            <input class="layui-input" type="hidden" name="pageSize" value="10">
+            <button class="layui-btn"  lay-submit="" lay-filter="search"><i class="layui-icon">&#xe615;</i></button>
+        </form>
+    </div>
+    <xblock>
+        <!--<button id="addUserBtn" class="layui-btn layui-btn-normal"> <i class="layui-icon">&#xe654;</i>添加 </button>-->
+        <button id="deleteUserBtn" class="layui-btn layui-btn-normal" lay-submit lay-filter="deleteCk"> <i class="layui-icon">&#xe640;</i>删除选中评论 </button>
+        <span th:text="'共有数据：'+${pi.totalCount}+' 条'" class="x-right" style="line-height:40px"></span>
+    </xblock>
+
+    <!--用户信息表-->
+    <table class="layui-table">
+        <thead>
+        <tr>
+            <th>选择</th>
+            <th>ID</th>
+            <th>书名</th>
+            <th>用户名</th>
+            <th>评分</th>
+            <th>评论时间</th>
+            <th>评论内容</th>
+            <th>点赞数</th>
+            <th>操作</th>
+        </thead>
+        <tbody>
+        <tr th:each="comment : ${pi.list}">
+            <td class="ck"><input type="checkbox" name="ck" th:value="${comment.c_id}" lay-skin="primary" ></td>
+            <td th:text="${comment.c_id}" name="c_id"></td>
+            <td th:text="${comment.book_name}" name="book_name"></td>
+            <td th:text="${comment.username}" name="username"></td>
+            <td th:text="${comment.score}" name="score"></td>
+            <td th:text="${#dates.format(comment.time,'yyyy-MM-dd')}" name="time"></td>
+            <td th:text="${comment.comment}" name="comment"></td>
+            <td th:text="${comment.approval}" name="approval"></td>
+            <td>
+                <a title="删除"  th:href="'javascript:comment_del(this,'+${comment.c_id}+');'">
+                    <i class="layui-icon">&#xe640;</i>
+                </a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div>
+        <input type="hidden" id="totalPageCount" th:value="${pi.pageTotalCount}"/>
+        <div th:include="pageBtn::pageBtn(totalCount=${pi.totalCount},currentPageNo=${pi.pageIndex},totalPageCount=${pi.pageTotalCount})"></div>
+    </div>
+
+</div>
+
+<script>
+    layui.use(['jquery','form','layer'], function(){
+        var form = layui.form,
+            $ = layui.jquery;
+
+//        获取复选框值
+        form.on('submit(deleteCk)',function (data) {
+            var ck = [];
+            $('.ck input[type=checkbox]:checked').each(function () {
+                ck.push($(this).val());
+            });
+            ck = ck.toString();
+            layer.confirm('确认要删除吗？',function(index){
+                $.get("/deleteSelectedComment",{"ck":ck},function (data) {
+                    if(data =true){
+                        layer.msg('删除成功!',{icon:1,time:2000});
+                        setTimeout(function () {window.location.href='/findComment';},1000);
+
+                    }else {
+                        layer.msg('删除失败!',{icon:1,time:2000});
+                        setTimeout(function () {window.location.href='/findComment';},1000);
+                    }
+                });
+            });
+        })
+    });
+
+    //    删除
+    function comment_del(obj,c_id){
+        layer.confirm('确认要删除吗？',function(index){
+            $.get("/deleteComment",{"c_id":c_id},function (data) {
+                if(data =true){
+                    layer.msg('删除成功!',{icon:1,time:2000});
+                    setTimeout(function () {window.location.href='/findComment';},1000);
+
+                }else {
+                    layer.msg('删除失败!',{icon:1,time:2000});
+                    setTimeout(function () {window.location.href='/findComment';},1000);
+                }
+            });
+        });
+    }
+
+
+
+</script>
+</body>
+</html>

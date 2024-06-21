@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<!--suppress ThymeleafVariablesResolveInspection -->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link rel="stylesheet" th:href="@{/css/font.css}">
+    <link rel="stylesheet" th:href="@{/css/xadmin.css}">
+    <link rel="stylesheet" th:href="@{/css/pg_btn.css}">
+    <script th:src="@{/layui/jquery-3.5.1.min.js}"></script>
+    <script th:src="@{/layui/layui.js}"></script>
+    <script th:src="@{/js/xadmin.js}"></script>
+    <title>修改借阅信息</title>
+</head>
+<body>
+<div class="x-body">
+    <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="/findBorrow" title="返回">
+        <i class="layui-icon" style="line-height:30px">&#xe65c;</i></a>
+    <form class="layui-form" action="/updateBorrow" method="post"  id="f_auto" accept-charset="UTF-8">
+        <input type="hidden" th:value="${modBorrow.b_id}" name="b_id" id="b_id"/>
+        <div class="layui-form-item">
+            <label for="s_id" class="layui-form-label">
+                <span class="f_sp">ID</span>
+            </label>
+            <div class="layui-input-inline">
+                <input type="text" id="s_id" name="s_id"
+                       autocomplete="off" th:value="${modBorrow.b_id}" class="layui-input" disabled>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label for="book_id" class="layui-form-label">
+                <span class="f_sp">图书ID</span>
+            </label>
+            <div class="layui-input-inline">
+                <input type="text" id="book_id" name="book_id"
+                       autocomplete="off" th:value="${modBorrow.book_id}" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label for="username" class="layui-form-label">
+                <span class="f_sp">用户ID</span>
+            </label>
+            <div class="layui-input-inline">
+                <input type="text" id="username" name="username"
+                       autocomplete="off" th:value="${modBorrow.u_id}" class="layui-input" disabled>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label for="borrow_time" class="layui-form-label">
+                <span class="f_sp">借阅时间</span>
+            </label>
+            <div class="layui-input-inline">
+                <input type="text" id="borrow_time" name="borrow_time"
+                       autocomplete="off" th:value="${#dates.format(modBorrow.borrow_time,'yyyy-MM-dd HH:mm:ss')}" class="layui-input" disabled>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label for="remain_day" class="layui-form-label">
+                <span class="f_sp">剩余时间</span>
+            </label>
+            <div class="layui-input-inline">
+                <input type="text" id="remain_day" name="remain_day"
+                       autocomplete="off" th:value="${modBorrow.remain_day}" class="layui-input" disabled>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label for="renew_times" class="layui-form-label">
+                <span class="f_sp">续借次数</span>
+            </label>
+            <div class="layui-input-inline">
+                <input type="number" id="renew_times" name="renew_times"
+                       autocomplete="off" th:value="${modBorrow.renew_times}" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label for="state" class="layui-form-label">
+                <span class="f_sp">状态</span>
+            </label>
+            <div class="layui-input-inline">
+                <input type="text" id="state" name="state"
+                       autocomplete="off" th:value="${modBorrow.state}" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label for="money" class="layui-form-label">
+                <span class="f_sp">欠费金额</span>
+            </label>
+            <div class="layui-input-inline">
+                <input type="number" id="money" name="money"
+                       autocomplete="off" th:value="${modBorrow.money}" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item" id="btn_xg">
+            <button  class="layui-btn"  id="btn_on" lay-filter="updateForm" lay-submit="">
+                修改
+            </button>
+        </div>
+    </form>
+</div>
+</body>
+</html>

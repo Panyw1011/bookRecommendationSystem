@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bookrecommend.dao.LabelDao">
+    <select id="getLabelList" resultType="Label">
+        SELECT * FROM label WHERE 1=1
+        <if test="l_id != null and l_id != ''">
+            AND l_id like concat('%',#{l_id},'%')
+        </if>
+        <if test="label_name != null and label_name != ''">
+            AND label_name like concat('%',#{label_name},'%')
+        </if>
+        limit #{currentPage},#{pageSize}
+    </select>
+
+    <select id="totalCount" resultType="Integer">
+        SELECT COUNT(l_id) FROM label WHERE 1=1
+        <if test="l_id != null and l_id != ''">
+            AND l_id like concat('%',#{l_id},'%')
+        </if>
+        <if test="label_name != null and label_name != ''">
+            AND label_name like concat('%',#{label_name},'%')
+        </if>
+    </select>
+
+    <insert id="addLabel" parameterType="Label">
+        INSERT INTO label (label_name)
+        VALUE (#{label_name})
+    </insert>
+
+    <delete id="delLabel">
+        DELETE FROM label WHERE l_id = #{l_id}
+    </delete>
+
+    <delete id="deleteSelectedLabel" parameterType="String">
+        DELETE FROM label WHERE l_id IN (${ck})
+    </delete>
+
+    <select id="findLabelById" resultType="Label">
+        SELECT * FROM label WHERE l_id = #{l_id}
+    </select>
+
+    <update id="updateLabel" parameterType="Label">
+        UPDATE label
+        <set>
+            <if test="label_name!=null and label_name!=''">
+                label_name = #{label_name},
+            </if>
+        </set>
+        WHERE l_id = #{l_id}
+    </update>
+
+    <select id="getHotLabel" resultType="Label">
+        SELECT * FROM label ORDER BY book_count DESC LIMIT 20
+    </select>
+</mapper>

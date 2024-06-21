@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bookrecommend.dao.BookDao">
+    <select id="getBookList" resultType="Books">
+        SELECT b.book_id,b.ISBN,b.book_name,b.author,b.year_of_publication,b.pages,b.publishing_house,b.brief_introduction,b.author_introduction,l.label_name,b.number_of_people,b.img_url,b.book_count
+        FROM books b,label l WHERE 1=1 AND b.l_id = l.l_id
+        <if test="book_name != null and book_name != ''">
+            AND book_name like concat('%',#{book_name},'%')
+        </if>
+        <if test="author != null and author != ''">
+            AND author like concat('%',#{author},'%')
+        </if>
+        <if test="publishing_house != null and publishing_house != ''">
+            AND publishing_house like concat('%',#{publishing_house},'%')
+        </if>
+        <if test="ISBN != null and ISBN != ''">
+            AND ISBN like concat('%',#{ISBN},'%')
+        </if>
+        <if test="label_name != null and label_name != ''">
+            AND label_name = #{label_name}
+        </if>
+        <if test="sort != null and sort != ''">
+            ORDER BY ${sort} DESC
+        </if>
+        limit #{currentPage},#{pageSize}
+    </select>
+
+    <select id="totalCount" resultType="Integer">
+        SELECT COUNT(ISBN)
+        FROM books b,label l WHERE 1=1 AND b.l_id = l.l_id
+        <if test="book_name != null and book_name != ''">
+            AND book_name like concat('%',#{book_name},'%')
+        </if>
+        <if test="author != null and author != ''">
+            AND author like concat('%',#{author},'%')
+        </if>
+        <if test="publishing_house != null and publishing_house != ''">
+            AND publishing_house like concat('%',#{publishing_house},'%')
+        </if>
+        <if test="ISBN != null and ISBN != ''">
+            AND ISBN like concat('%',#{ISBN},'%')
+        </if>
+        <if test="label_name != null and label_name != ''">
+            AND label_name = #{label_name}
+        </if>
+    </select>
+
+    <insert id="addBook" parameterType="Books">
+        INSERT INTO books (book_name, author, publishing_house, year_of_publication, pages, ISBN, brief_introduction, author_introduction, l_id, img_url,book_count)
+        VALUE (#{book_name}, #{author}, #{publishing_house}, #{year_of_publication}, #{pages}, 1, #{brief_introduction}, #{author_introduction}, 7, #{img_url}, #{book_count})
+    </insert>
+
+    <delete id="delBook">
+        DELETE FROM books WHERE book_id = #{book_id}
+    </delete>
+
+    <delete id="deleteSelectedBook" parameterType="String">
+        DELETE FROM books WHERE book_id IN (${ck})
+    </delete>
+
+    <select id="findBookById" resultType="Books">
+        SELECT b.book_id,b.ISBN,b.book_name,b.author,b.year_of_publication,b.pages,b.publishing_house,b.brief_introduction,b.author_introduction,l.label_name,b.number_of_people,b.img_url,b.book_count
+        FROM books b,label l WHERE b.l_id = l.l_id AND book_id = #{book_id}
+    </select>
+
+    <update id="updateBook" parameterType="Books">
+        UPDATE books
+        <set>
+            <if test="book_name!=null and book_name!=''">
+                book_name = #{book_name},
+            </if>
+            <if test="author!=null and author!=''">
+                author = #{author},
+            </if>
+            <if test="publishing_house!=null and publishing_house!=''">
+                publishing_house = #{publishing_house},
+            </if>
+            <if test="year_of_publication!=null and year_of_publication!=''">
+                year_of_publication = #{year_of_publication},
+            </if>
+            <if test="pages!=null">
+                pages = #{pages},
+            </if>
+            <if test="brief_introduction!=null and brief_introduction!=''">
+                brief_introduction = #{brief_introduction},
+            </if>
+            <if test="author_introduction!=null and author_introduction!=''">
+                author_introduction = #{author_introduction},
+            </if>
+            <!--<if test="label_name!=null and label_name!=''">-->
+                <!--l_id = #{l_id},-->
+            <!--</if>-->
+            <if test="img_url!=null and img_url!=''">
+                img_url = #{img_url},
+            </if>
+            <if test="book_count!=null">
+                book_count = #{book_count},
+            </if>
+        </set>
+        WHERE book_id = #{book_id}
+    </update>
+
+    <select id="getPopularBook" resultType="Books">
+       SELECT * FROM books ORDER BY number_of_people DESC  limit 4
+    </select>
+
+    <select id="getNewBook" resultType="Books" parameterType="Integer">
+        SELECT * FROM books ORDER BY year_of_publication DESC limit #{count}
+    </select>
+
+    <select id="findAllByIds" resultType="Books">
+        SELECT * FROM books WHERE ISBN IN
+        <foreach collection="ids" item="ISBN" open="(" close=")" separator=",">
+            #{ISBN}
+        </foreach>
+    </select>
+
+    <select id="getBookCount" resultType="Integer">
+        SELECT book_count FROM books WHERE book_id = #{book_id}
+    </select>
+
+    <update id="updateBookCount">
+        UPDATE books SET book_count = book_count-1 WHERE book_id = #{book_id};
+    </update>
+
+    <update id="upBookCount">
+        UPDATE books SET book_count = book_count+1 WHERE book_id = #{book_id};
+    </update>
+
+    <select id="getRandBook" resultType="Books" parameterType="Integer">
+        SELECT * FROM books  AS t1  JOIN (SELECT ROUND(RAND() * ((SELECT MAX(book_id) FROM books)-(SELECT MIN(book_id) FROM books))+(SELECT MIN(book_id) FROM books)) AS book_id) AS t2 WHERE t1.book_id >= t2.book_id ORDER BY t1.book_id LIMIT #{count}
+    </select>
+
+    <select id="getBookISBN" resultType="String">
+        SELECT ISBN FROM books WHERE book_id = #{book_id}
+    </select>
+
+    <select id="getBookChartData" resultType="map">
+        SELECT book_name, number_of_people FROM books ORDER BY number_of_people DESC LIMIT 10
+    </select>
+
+</mapper>

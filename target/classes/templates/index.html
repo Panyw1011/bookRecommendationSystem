@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<!--suppress ThymeleafVariablesResolveInspection -->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>图书馆-首页</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" th:href="@{/layui/css/layui.css}">
+  <link rel="stylesheet" th:href="@{/css/index.css}">
+</head>
+<body>
+
+<div class="house-header">
+  <div class="layui-container">
+    <div class="house-nav">
+      <span class="layui-breadcrumb" lay-separator="|">
+        <a th:href="${session.currentUser == null ? '/user_login' : '/userInfo'}"
+            th:text="${session.currentUser == null ? '登录' : '欢迎您：'+session.currentUser.getUsername()}"></a>
+        <a th:if="${session.currentUser != null}" href="/userLoginOut">退出</a>
+        <a href="/user_borrow">我的借阅</a>
+        <a href="">在线客服</a>
+      </span>
+      <span class="layui-breadcrumb house-breadcrumb-icon" lay-separator=" ">
+        <a id="search"><i class="layui-icon layui-icon-house-find"></i></a>
+        <a href="login.html"><i class="layui-icon layui-icon-username"></i></a>
+        <a href="usershop.html"><i class="layui-icon layui-icon-house-shop"></i></a>
+      </span>
+    </div> 
+    <div class="house-banner layui-form">
+      <a class="banner" href="index.html">
+        <img th:src="@{/img/banner.png}" alt="图书馆">
+      </a>
+      <div class="layui-input-inline">
+        <form class="layui-form layui-col-md12 x-so" action="/allBook" >
+          <input type="text" placeholder="搜索好书" class="layui-input" name="book_name" id="book_name">
+          <input class="layui-input" type="hidden" name="pageIndex" value="1">
+          <input class="layui-input" type="hidden" name="pageSize" value="20">
+          <button class="layui-btn"  lay-submit="" lay-filter="search"><i class="layui-icon layui-icon-house-find"></i></button>
+        </form>
+      </div>
+      <a class="shop" href="/user_collect">
+        <i class="layui-icon">&#xe600;</i>
+      </a>
+    </div>
+    <ul class="layui-nav close" style="padding-left: 29%;width: 100%">
+      <li class="layui-nav-item layui-this"><a href="/index">首页</a></li>
+      <li class="layui-nav-item"><a href="/allBook">所有图书</a></li>
+      <li class="layui-nav-item"><a href="/recommend">图书推荐</a></li>
+      <li class="layui-nav-item"><a href="/newBook">新书速递</a></li>
+    </ul>
+    <button id="switch">
+      <span></span><span class="second"></span><span class="third"></span>
+    </button>
+  </div>
+</div>
+
+<div class="layui-fulid">
+  <div class="layui-carousel house-carousel" id="house-carousel">
+    <div carousel-item>
+      <div><img th:src="@{/img/banner1.jpg}"></div>
+      <div><img th:src="@{/img/banner2.jpg}"></div>
+    </div>
+  </div>
+</div>
+
+<div class="layui-container">
+  <div class="hot-cate">
+    <p class="house-title">热门标签<a href="/all_label">更多标签  &gt;</a></p>
+    <div class="layui-row">
+      <a th:each="hotLabel : ${hotLabel}" th:href="'allBook?label_name='+${hotLabel.label_name}">
+        <div style="width: 10%;float: left;padding-bottom: 20px">
+          <span th:text="${hotLabel.label_name}" ></span>
+        </div>
+      </a>
+    </div>
+  </div>
+  <div class="hot-sell">
+    <p class="house-title">热门图书<a href="/allBook">更多好书  &gt;</a></p>
+    <div class="layui-row layui-col-space20">
+      <a th:each="popularBook : ${popularBook}" th:href="'/detail?book_id='+${popularBook.book_id}" class="layui-col-xs3 text">
+        <div><img th:src="'https://images.weserv.nl/?url='+${popularBook.img_url}" style="width: 285px;height: 285px"></div>
+        <p th:text="${popularBook.book_name}"></p>
+        <p class="price" th:text="'作者:'+${popularBook.author}"></p>
+      </a>
+
+    </div>
+  </div>
+
+  <div class="hot-sell">
+    <p class="house-title">猜您喜欢<a href="/recommend">更多推荐  &gt;</a></p>
+    <div class="layui-row layui-col-space20">
+      <a th:each="randBook : ${randBook}" th:href="'/detail?book_id='+${randBook.book_id}" class="layui-col-xs3 text">
+        <div><img th:src="'https://images.weserv.nl/?url='+${randBook.img_url}" style="width: 285px;height: 285px"></div>
+        <p th:text="${randBook.book_name}"></p>
+        <p class="price" th:text="'作者:'+${randBook.author}"></p>
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="layui-fulid" id="goodsAll"></div>
+
+<div class="layui-container">
+  <div class="hot-sell">
+    <p class="house-title">新书推荐<a href="/newBook">更多新书  &gt;</a></p>
+    <div class="layui-row layui-col-space20">
+      <a th:each="newBook : ${newBook}" th:href="'/detail?book_id='+${newBook.book_id}" class="layui-col-xs3 text">
+        <div><img th:src="'https://images.weserv.nl/?url='+${newBook.img_url}" style="width: 285px;height: 285px"></div>
+        <p th:text="${newBook.book_name}"></p>
+        <p class="price" th:text="'作者:'+${newBook.author}"></p>
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="house-footer">
+  <div class="layui-container">
+    <div class="about">
+      <span class="layui-breadcrumb" lay-separator="|">
+        <a href="about.html">关于我们</a>
+        <a href="about.html">帮助中心</a>
+        <a href="about.html">联系我们</a>
+        <a href="about.html">法律声明</a>
+        <a href="about.html">图书馆合作</a>
+      </span>
+      <p>图书馆版权所有 &copy; 2020-2022</p>
+    </div>   
+  </div>
+</div>
+
+<script th:src="@{/layui/layui.js}"></script>
+<script>
+  layui.config({
+    base: '../js/'
+  }).use('house'); 
+</script>
+
+</body>
+</html>
